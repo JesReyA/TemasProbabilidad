@@ -19,16 +19,11 @@ class TemaUno:
         else:
             tipo_carta = "Trebol"
 
-        ruta_imagen_carta_png = f"imagenes/{self.numero_aleatorio_carta}{self.tipo_carta}.png"
-        ruta_imagen_carta_jpg = f"imagenes/{self.numero_aleatorio_carta}{self.tipo_carta}.jpg"
+        ruta_imagen_carta_png = f"imagenes/{self.numero_aleatorio_carta}{tipo_carta}.png"
+        ruta_imagen_carta_jpg = f"imagenes/{self.numero_aleatorio_carta}{tipo_carta}.jpg"
 
         if os.path.exists(ruta_imagen_carta_png):
-            imagen_carta = mpimg.imread(ruta_imagen_carta_png)
-            plt.imshow(imagen_carta)
-            plt.axis('off')
-            plt.show()
+            return ruta_imagen_carta_png
         else:
-            imagen_carta = mpimg.imread(ruta_imagen_carta_jpg)
-            plt.imshow(imagen_carta)
-            plt.axis('off')
-            plt.show()
+            return ruta_imagen_carta_jpg
+        

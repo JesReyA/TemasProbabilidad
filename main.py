@@ -1,4 +1,4 @@
-from PIL import TiffImagePlugin
+from PIL import Image, ImageTk
 import customtkinter as ctk
 from tkinter import messagebox
 import sympy as sp
@@ -85,9 +85,19 @@ class NumericalMethodsApp(ctk.CTk):
         self.input_container = ctk.CTkFrame(self.main_frame, fg_color=DARK_BG, corner_radius=15)
         self.input_container.pack(fill="x", padx=20, pady=10)
 
+        self.definition_label = ctk.CTkLabel(self.main_frame, text="Definición:",
+                                         font=ctk.CTkFont(size=16, weight="bold"), text_color=NEON_BLUE, anchor="w")
+        self.definition_label.pack(pady=(20, 5), padx=20, fill="x")
+
+        self.definition_textbox = ctk.CTkTextbox(self.main_frame, height=100, corner_radius=15, border_width=2,
+                                             border_color=NEON_BLUE, fg_color=DARK_BG, text_color=TEXT_COLOR,
+                                             font=ctk.CTkFont(family="Consolas", size=12))
+        self.definition_textbox.pack(fill="x", padx=20, pady=(0, 10))
+        self.definition_textbox.configure(state="disabled")
+
         self.result_label = ctk.CTkLabel(self.main_frame, text="Demostración:",
                                          font=ctk.CTkFont(size=16, weight="bold"), text_color=NEON_BLUE, anchor="w")
-        self.result_label.pack(pady=(20, 5), padx=20, fill="x")
+        self.result_label.pack(pady=(10, 5), padx=20, fill="x")
 
         self.result_textbox = ctk.CTkTextbox(self.main_frame, height=200, corner_radius=15, border_width=2,
                                              border_color=NEON_BLUE, fg_color=DARK_BG, text_color=TEXT_COLOR,
@@ -136,9 +146,7 @@ class NumericalMethodsApp(ctk.CTk):
         self.result_textbox.delete("1.0", "end")
         self.result_textbox.configure(state="disabled")
 
-        if "Tema Uno" == new_method:
-            self.create_entry("Número", "numero")
-        elif "Tema Dos" == new_method:
+        if "Tema Dos" == new_method:
             self.create_entry("Número", "numero")
         elif "Tema Tres" == new_method:
             self.create_entry("Número", "numero")
@@ -147,23 +155,6 @@ class NumericalMethodsApp(ctk.CTk):
         elif "Tema Cinco" == new_method:
             self.create_entry("Número", "numero")
 
-    def format_matrix_string(self, name, matrix):
-        try:
-            mat_float = sp.N(matrix)
-            s = f"--- {name} ---\n"
-            rows = mat_float.rows
-            cols = mat_float.cols
-            for i in range(rows):
-                line = "[ "
-                for j in range(cols):
-                    val = mat_float[i, j]
-                    line += f"{float(val):>18.10f} "
-                line += "]\n"
-                s += line
-            s += "\n"
-            return s
-        except Exception as e:
-            return f"--- {name} ---\n{str(matrix)}\n"
 
     def append_result(self, text):
         self.result_textbox.configure(state="normal")
@@ -182,9 +173,20 @@ class NumericalMethodsApp(ctk.CTk):
         try:
             # --- Tema Uno ---
             if method == "Tema Uno":
-                numero = self.entries["numero"].get()
-                res = self.logic_derivada.calcular(numero)
-                self.overwrite_result(res)
+                self.logic_tema_uno = TemaUno()
+
+                ruta_carta = self.logic_tema_uno.mostrar_carta()
+                img_pil = Image.open(ruta_carta)
+                
+                img_pil = img_pil.resize((250, 350)) 
+                self.foto_carta = ImageTk.PhotoImage(img_pil)
+                
+                self.result_textbox.configure(state="normal")
+
+                self.result_textbox.delete("1.0", "end")
+
+                self.result_textbox._textbox.image_create("end", image=self.foto_carta)
+                self.result_textbox.configure(state="disabled")
 
             else:
                 self.overwrite_result("Método pendiente.")
