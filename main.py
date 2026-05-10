@@ -146,6 +146,27 @@ class NumericalMethodsApp(ctk.CTk):
         self.result_textbox.delete("1.0", "end")
         self.result_textbox.configure(state="disabled")
 
+        # Mapeo de temas a sus instancias lógicas
+        temas_logic = {
+            "Tema Uno": self.logic_tema_uno,
+            #"Tema Dos": self.logic_tema_dos,
+            #"Tema Tres": self.logic_tema_tres,
+            #"Tema Cuatro": self.logic_tema_cuatro,
+            #"Tema Cinco": self.logic_tema_cinco,
+        }
+
+        # Actualizar el cuadro de Definición
+        logic = temas_logic.get(new_method)
+        if logic and hasattr(logic, "definicion"):
+            self.definition_textbox.configure(state="normal")
+            self.definition_textbox.delete("1.0", "end")
+            self.definition_textbox.insert("0.0", logic.definicion)
+            self.definition_textbox.configure(state="disabled")
+        else:
+            self.definition_textbox.configure(state="normal")
+            self.definition_textbox.delete("1.0", "end")
+            self.definition_textbox.configure(state="disabled")
+
         if "Tema Dos" == new_method:
             self.create_entry("Número", "numero")
         elif "Tema Tres" == new_method:
