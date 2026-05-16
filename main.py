@@ -8,7 +8,7 @@ from tema_uno import TemaUno
 #from tema_dos import TemaDos
 #from tema_tres import TemaTres
 #from tema_cuatro import TemaCuatro
-#from tema_cinco import TemaCinco
+from tema_cinco import TemaCinco
 from tema_nueve import TemaNueve
 
 ctk.set_appearance_mode("Dark")
@@ -40,7 +40,7 @@ class NumericalMethodsApp(ctk.CTk):
         #self.logic_tema_dos = TemaDos(None)
         #self.logic_tema_tres = TemaTres(None)
         #self.logic_tema_cuatro = TemaCuatro(None)
-        #self.logic_tema_cinco = TemaCinco(None)
+        self.logic_tema_cinco = TemaCinco()
         self.logic_tema_nueve = TemaNueve()
 
         self.title("Probabilidad y estadística")
@@ -145,6 +145,13 @@ class NumericalMethodsApp(ctk.CTk):
             entry.pack(side="left", fill="x", expand=True, padx=(0 if i == 0 else 10, 0))
             self.entries[keys[i]] = entry
 
+    def create_option_menu(self, label_text, values, key):
+        lbl = ctk.CTkLabel(self.input_container, text=label_text, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+        lbl.pack(pady=(10, 5), padx=20, anchor="w")
+        option_menu = ctk.CTkOptionMenu(self.input_container, values=values)
+        option_menu.pack(pady=(0, 10), padx=20, fill="x")
+        self.entries[key] = option_menu
+
     def change_method_event(self, new_method):
         self.clean_inputs()
         self.title_label.configure(text=new_method)
@@ -158,7 +165,7 @@ class NumericalMethodsApp(ctk.CTk):
             #"Tema Dos": self.logic_tema_dos,
             #"Tema Tres": self.logic_tema_tres,
             #"Tema Cuatro": self.logic_tema_cuatro,
-            #"Tema Cinco": self.logic_tema_cinco,
+            "Tema Cinco": self.logic_tema_cinco,
             "Tema Nueve": self.logic_tema_nueve
         }
 
@@ -181,7 +188,13 @@ class NumericalMethodsApp(ctk.CTk):
         elif "Tema Cuatro" == new_method:
             self.create_entry("Número", "numero")
         elif "Tema Cinco" == new_method:
-            self.create_entry("Número", "numero")
+            opciones_tema_cinco = [
+                "Tres corazones seguidos",
+                "Rey rojo y carta negra",
+                "Cuatro rojas seguidas",
+                "Rey y Reina"
+            ]
+            self.create_option_menu("Selecciona el caso", opciones_tema_cinco, "caso_tema_cinco")
 
 
     def append_result(self, text):
@@ -215,7 +228,41 @@ class NumericalMethodsApp(ctk.CTk):
 
                 self.result_textbox._textbox.image_create("end", image=self.foto_carta)
                 self.result_textbox.configure(state="disabled")
-            
+
+            elif method == "Tema Cinco":
+                self.logic_tema_cinco = TemaCinco()
+                self.logic_tema_cinco.mazoCartas()
+                
+                caso_seleccionado = self.entries.get("caso_tema_cinco")
+                if caso_seleccionado:
+                    caso_val = caso_seleccionado.get()
+                    if caso_val == "Tres corazones seguidos":
+                        probabilidad, cartas = self.logic_tema_cinco.tres_corazones_seguidos()
+                    elif caso_val == "Rey rojo y carta negra":
+                        probabilidad, cartas = self.logic_tema_cinco.rey_rojo_y_carta_negra()
+                    elif caso_val == "Cuatro rojas seguidas":
+                        probabilidad, cartas = self.logic_tema_cinco.cuatro_rojas_seguidas()
+                    elif caso_val == "Rey y Reina":
+                        probabilidad, cartas = self.logic_tema_cinco.rey_reina()
+                    else:
+                        probabilidad, cartas = 0, []
+                    
+                    self.result_textbox.configure(state="normal")
+                    self.result_textbox.delete("1.0", "end")
+                    self.result_textbox.insert("end", f"Probabilidad: {probabilidad}\n\nCartas seleccionadas:\n")
+                    
+                    self.fotos_tema_cinco = [] 
+                    for ruta in cartas:
+                        img_pil = Image.open(ruta)
+                        img_pil = img_pil.resize((120, 180)) 
+                        foto = ImageTk.PhotoImage(img_pil)
+                        self.fotos_tema_cinco.append(foto)
+                        self.result_textbox._textbox.image_create("end", image=foto)
+                        self.result_textbox.insert("end", "   ") 
+                    
+                    self.result_textbox.insert("end", "\n")
+                    self.result_textbox.configure(state="disabled")
+
             elif method == "Tema Nueve":
                 self.logic_tema_nueve = TemaNueve()
 
