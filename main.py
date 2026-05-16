@@ -9,6 +9,7 @@ from tema_uno import TemaUno
 #from tema_tres import TemaTres
 #from tema_cuatro import TemaCuatro
 from tema_cinco import TemaCinco
+from tema_seis import TemaSeis
 from tema_nueve import TemaNueve
 
 ctk.set_appearance_mode("Dark")
@@ -41,6 +42,7 @@ class NumericalMethodsApp(ctk.CTk):
         #self.logic_tema_tres = TemaTres(None)
         #self.logic_tema_cuatro = TemaCuatro(None)
         self.logic_tema_cinco = TemaCinco()
+        self.logic_tema_seis = TemaSeis()
         self.logic_tema_nueve = TemaNueve()
 
         self.title("Probabilidad y estadística")
@@ -145,10 +147,10 @@ class NumericalMethodsApp(ctk.CTk):
             entry.pack(side="left", fill="x", expand=True, padx=(0 if i == 0 else 10, 0))
             self.entries[keys[i]] = entry
 
-    def create_option_menu(self, label_text, values, key):
+    def create_option_menu(self, label_text, values, key, command=None):
         lbl = ctk.CTkLabel(self.input_container, text=label_text, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
         lbl.pack(pady=(10, 5), padx=20, anchor="w")
-        option_menu = ctk.CTkOptionMenu(self.input_container, values=values)
+        option_menu = ctk.CTkOptionMenu(self.input_container, values=values, command=command)
         option_menu.pack(pady=(0, 10), padx=20, fill="x")
         self.entries[key] = option_menu
 
@@ -166,6 +168,7 @@ class NumericalMethodsApp(ctk.CTk):
             #"Tema Tres": self.logic_tema_tres,
             #"Tema Cuatro": self.logic_tema_cuatro,
             "Tema Cinco": self.logic_tema_cinco,
+            "Tema Seis": self.logic_tema_seis,
             "Tema Nueve": self.logic_tema_nueve
         }
 
@@ -195,6 +198,21 @@ class NumericalMethodsApp(ctk.CTk):
                 "Rey y Reina"
             ]
             self.create_option_menu("Selecciona el caso", opciones_tema_cinco, "caso_tema_cinco")
+        elif "Tema Seis" == new_method:
+            def update_desc_tema_seis(choice):
+                self.definition_textbox.configure(state="normal")
+                self.definition_textbox.delete("1.0", "end")
+                base_def = self.logic_tema_seis.definicion + "\n\nEjemplo:\n"
+                if choice == "Evento A":
+                    self.definition_textbox.insert("0.0", base_def + self.logic_tema_seis.desc_evento_A)
+                else:
+                    self.definition_textbox.insert("0.0", base_def + self.logic_tema_seis.desc_evento_B)
+                self.definition_textbox.configure(state="disabled")
+
+            opciones_tema_seis = ["Evento A", "Evento B"]
+            self.create_option_menu("Selecciona el evento", opciones_tema_seis, "caso_tema_seis", command=update_desc_tema_seis)
+            update_desc_tema_seis("Evento A")
+            self.create_horizontal_group("Probabilidades", ["Prob. Normal", "Prob. A", "Prob. B"], ["prob_normal", "prob_a", "prob_b"])
 
 
     def append_result(self, text):
@@ -261,6 +279,35 @@ class NumericalMethodsApp(ctk.CTk):
                         self.result_textbox.insert("end", "   ") 
                     
                     self.result_textbox.insert("end", "\n")
+                    self.result_textbox.configure(state="disabled")
+
+            elif method == "Tema Seis":
+                try:
+                    prob_normal = float(self.entries["prob_normal"].get())
+                    prob_a = float(self.entries["prob_a"].get())
+                    prob_b = float(self.entries["prob_b"].get())
+                except ValueError:
+                    messagebox.showerror("Error", "Por favor ingresa valores numéricos válidos en las 3 casillas.")
+                    return
+                
+                self.logic_tema_seis = TemaSeis()
+                self.logic_tema_seis.probabilidad_programada = prob_normal
+                self.logic_tema_seis.probabilidad_evento_A = prob_a
+                self.logic_tema_seis.probabilidad_evento_B = prob_b
+                
+                caso_seleccionado = self.entries.get("caso_tema_seis")
+                if caso_seleccionado:
+                    caso_val = caso_seleccionado.get()
+                    if caso_val == "Evento A":
+                        total = self.logic_tema_seis.calcular_evento_A()
+                    else:
+                        total = self.logic_tema_seis.calcular_evento_B()
+                    
+                    restante = self.logic_tema_seis.probabilidad_restante
+                    
+                    self.result_textbox.configure(state="normal")
+                    self.result_textbox.delete("1.0", "end")
+                    self.result_textbox.insert("end", f"Probabilidad Total: {total:.4f}\n")
                     self.result_textbox.configure(state="disabled")
 
             elif method == "Tema Nueve":
