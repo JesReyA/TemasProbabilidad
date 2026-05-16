@@ -9,6 +9,7 @@ from tema_uno import TemaUno
 #from tema_tres import TemaTres
 #from tema_cuatro import TemaCuatro
 #from tema_cinco import TemaCinco
+from tema_nueve import TemaNueve
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -40,6 +41,7 @@ class NumericalMethodsApp(ctk.CTk):
         #self.logic_tema_tres = TemaTres(None)
         #self.logic_tema_cuatro = TemaCuatro(None)
         #self.logic_tema_cinco = TemaCinco(None)
+        self.logic_tema_nueve = TemaNueve()
 
         self.title("Probabilidad y estadística")
         self.geometry("950x750")
@@ -64,7 +66,11 @@ class NumericalMethodsApp(ctk.CTk):
                                                         "Tema Dos",
                                                         "Tema Tres",
                                                         "Tema Cuatro",
-                                                        "Tema Cinco"
+                                                        "Tema Cinco",
+                                                        "Tema Seis",
+                                                        "Tema Siete",
+                                                        "Tema Ocho",
+                                                        "Tema Nueve"
                                                     ],
                                                     command=self.change_method_event)
         self.method_option_menu.grid(row=2, column=0, padx=20, pady=10)
@@ -153,6 +159,7 @@ class NumericalMethodsApp(ctk.CTk):
             #"Tema Tres": self.logic_tema_tres,
             #"Tema Cuatro": self.logic_tema_cuatro,
             #"Tema Cinco": self.logic_tema_cinco,
+            "Tema Nueve": self.logic_tema_nueve
         }
 
         # Actualizar el cuadro de Definición
@@ -208,6 +215,25 @@ class NumericalMethodsApp(ctk.CTk):
 
                 self.result_textbox._textbox.image_create("end", image=self.foto_carta)
                 self.result_textbox.configure(state="disabled")
+            
+            elif method == "Tema Nueve":
+                self.logic_tema_nueve = TemaNueve()
+
+                self.result_textbox.configure(state="normal")
+                self.result_textbox.delete("1.0", "end")
+
+                self.result_textbox.configure(state="disabled")
+
+                self.logic_tema_nueve.conjuntoNumeros()
+                self.append_result("Datos: " + str(self.logic_tema_nueve.datos))
+                self.append_result("\n")
+                self.append_result("Moda: " + str(self.logic_tema_nueve.calculateModa()))
+                self.append_result("Media: " + str(self.logic_tema_nueve.calculateMedia()))
+                self.append_result("Mediana: " + str(self.logic_tema_nueve.calculateMediana()))
+                self.append_result("Desviacion estandar poblacional: " + str(self.logic_tema_nueve.calculateDesviacionPoblacional()))
+                self.append_result("Varianza poblacional: " + str(self.logic_tema_nueve.calculateVarianzaPoblacional()))
+                self.append_result("Varianza muestral: " + str(self.logic_tema_nueve.calculateVarianzaMuestral()))
+                self.append_result("Desviacion muestral: " + str(self.logic_tema_nueve.calculateDesviacionMuestral()))
 
             else:
                 self.overwrite_result("Método pendiente.")

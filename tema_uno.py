@@ -7,7 +7,7 @@ class TemaUno:
     def __init__(self):
         self.numero_aleatorio_carta = random.randint(1,13)
         self.numero_aleatorio_tipo_carta = random.randint(1,4)
-        self.definicion = "La probabilidad es un método por el cual se obtiene la frecuencia de un acontecimiento determinado mediante \nla realización de un experimento aleatorio, del que se conocen todos los resultados posibles,\nbajo condiciones suficientemente estables."
+        self.definicion = "La probabilidad es un método por el cual se obtiene la frecuencia de un acontecimiento determinado mediante \nla realización de un experimento aleatorio, del que se conocen todos los resultados posibles,\n bajo condiciones suficientemente estables."
 
     def mostrar_carta(self):
         if self.numero_aleatorio_tipo_carta == 1:
