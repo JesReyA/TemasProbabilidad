@@ -3,6 +3,7 @@ import random
 import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
 
+#Probabilidad Multiplicativa / Regla Multiplicativa
 
 class TemaCinco:
     def __init__(self):

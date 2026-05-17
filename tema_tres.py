@@ -1,5 +1,7 @@
 import sympy as sp
 
+#Probabilidad condicional
+
 class TemaTres:
     def __init__(self):
         self.definicion = "La probabilidad condicional es la probabilidad de que ocurra un evento A sabiendo que ha ocurrido un evento B. "

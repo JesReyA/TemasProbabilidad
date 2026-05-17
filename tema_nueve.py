@@ -3,6 +3,8 @@ import sympy as sp
 import random
 from scipy import stats
 
+#Medidas de tendencia central y dispersión
+
 class TemaNueve:
     def __init__(self):
         self.definicion = "La moda es el valor que más se repite en un conjunto de datos.\nLa mediana es el valor que se encuentra en la posición central de un conjunto de datos ordenado.\nLa media es el promedio de los valores de un conjunto de datos.\nLa desviación estándar es la raíz cuadrada de la varianza y mide la dispersión de los datos con respecto a la media. \nLa varianza es el promedio de las diferencias al cuadrado entre cada valor y la media."

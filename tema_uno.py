@@ -3,6 +3,8 @@ import random
 import matplotlib.pyplot as plt
 from matplotlib import image as mpimg
 
+#Probabilidad
+
 class TemaUno:
     def __init__(self):
         self.numero_aleatorio_carta = random.randint(1,13)

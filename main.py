@@ -7,7 +7,7 @@ import sympy as sp
 from tema_uno import TemaUno
 from tema_dos import TemaDos
 from tema_tres import TemaTres
-#from tema_cuatro import TemaCuatro
+from tema_cuatro import TemaCuatro
 from tema_cinco import TemaCinco
 from tema_seis import TemaSeis
 from tema_nueve import TemaNueve
@@ -40,7 +40,7 @@ class NumericalMethodsApp(ctk.CTk):
         self.logic_tema_uno = TemaUno()
         self.logic_tema_dos = TemaDos()
         self.logic_tema_tres = TemaTres()
-        #self.logic_tema_cuatro = TemaCuatro(None)
+        self.logic_tema_cuatro = TemaCuatro()
         self.logic_tema_cinco = TemaCinco()
         self.logic_tema_seis = TemaSeis()
         self.logic_tema_nueve = TemaNueve()
@@ -166,7 +166,7 @@ class NumericalMethodsApp(ctk.CTk):
             "Tema Uno": self.logic_tema_uno,
             "Tema Dos": self.logic_tema_dos,
             "Tema Tres": self.logic_tema_tres,
-            #"Tema Cuatro": self.logic_tema_cuatro,
+            "Tema Cuatro": self.logic_tema_cuatro,
             "Tema Cinco": self.logic_tema_cinco,
             "Tema Seis": self.logic_tema_seis,
             "Tema Nueve": self.logic_tema_nueve
@@ -228,7 +228,8 @@ class NumericalMethodsApp(ctk.CTk):
             lbl_problema = ctk.CTkLabel(self.input_container, text=self.logic_tema_tres.problema, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
             lbl_problema.pack(pady=20, padx=20, fill="x", anchor="w")
         elif "Tema Cuatro" == new_method:
-            self.create_entry("Número", "numero")
+            lbl_problema = ctk.CTkLabel(self.input_container, text=self.logic_tema_cuatro.problema, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
+            lbl_problema.pack(pady=20, padx=20, fill="x", anchor="w")
         elif "Tema Cinco" == new_method:
             opciones_tema_cinco = [
                 "Tres corazones seguidos",
@@ -330,6 +331,32 @@ class NumericalMethodsApp(ctk.CTk):
                     f"   P(ICO|Linux) = P(ICO y Linux) / P(Linux)\n"
                     f"   P(ICO|Linux) = {prob_cond_uno:.4f} / {self.logic_tema_tres.probabilidad_Linux} = {probabilidad:.4f}\n\n"
                     f"Respuesta:\nLa probabilidad de que pertenezca a Ingeniería en Computación dado que usa Linux es {probabilidad:.2%}."
+                )
+                
+                self.result_textbox.insert("end", procedimiento)
+                self.result_textbox.configure(state="disabled")
+
+            elif method == "Tema Cuatro":
+                prob_uno, prob_dos, prob_total = self.logic_tema_cuatro.calcular_probabilidad()
+                
+                self.result_textbox.configure(state="normal")
+                self.result_textbox.delete("1.0", "end")
+                
+                procedimiento = (
+                    f"Teorema de Bayes - Procedimiento paso a paso:\n\n"
+                    f"1. Calcular la probabilidad de que el pedido sea de DiDi y llegue tarde (Intersección):\n"
+                    f"   P(DiDi ∩ Tarde) = P(DiDi) * P(Tarde | DiDi)\n"
+                    f"   P(DiDi ∩ Tarde) = {self.logic_tema_cuatro.p_DiDiFood} * {self.logic_tema_cuatro.p_DiDiFood_tarde:.2f} = {prob_uno:.4f}\n\n"
+                    f"2. Calcular la probabilidad total de que cualquier pedido llegue tarde (Probabilidad Total):\n"
+                    f"   P(Tarde) = [P(Uber) * P(Tarde | Uber)] + [P(DiDi) * P(Tarde | DiDi)] + [P(Rappi) * P(Tarde | Rappi)]\n"
+                    f"   P(Tarde) = [{self.logic_tema_cuatro.p_UberEats} * {self.logic_tema_cuatro.p_UberEats_tarde:.2f}] + "
+                    f"[{self.logic_tema_cuatro.p_DiDiFood} * {self.logic_tema_cuatro.p_DiDiFood_tarde:.2f}] + "
+                    f"[{self.logic_tema_cuatro.p_Rappi} * {self.logic_tema_cuatro.p_Rappi_tarde:.2f}]\n"
+                    f"   P(Tarde) = {prob_dos:.4f}\n\n"
+                    f"3. Aplicar el Teorema de Bayes para hallar la probabilidad condicional:\n"
+                    f"   P(DiDi | Tarde) = P(DiDi ∩ Tarde) / P(Tarde)\n"
+                    f"   P(DiDi | Tarde) = {prob_uno:.4f} / {prob_dos:.4f} = {prob_total:.4f}\n\n"
+                    f"Respuesta:\nLa probabilidad de que el pedido tarde haya sido entregado por DiDi Food es {prob_total:.2%}."
                 )
                 
                 self.result_textbox.insert("end", procedimiento)

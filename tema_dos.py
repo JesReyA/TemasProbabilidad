@@ -1,5 +1,7 @@
 import sympy as sp
 
+#Eventos
+
 class TemaDos:
     def __init__(self):
         self.definicion = "Eventos compuestos: Un evento compuesto es una combinación de dos o más eventos simples que ocurre al mismo tiempo. \nUn evento complementario es el evento que ocurre si y solo si otro evento no ocurre. \nUn evento disjunto es aquel que no puede ocurrir al mismo tiempo que otro evento. "

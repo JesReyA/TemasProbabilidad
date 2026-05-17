@@ -1,5 +1,7 @@
 import sympy as sp
 
+#Probabilidad Total
+
 class TemaSeis:
     def __init__(self):
         self.definicion = "La probabilidad Total es la suma de las probabilidades de los eventos individuales."
