@@ -10,6 +10,7 @@ from tema_tres import TemaTres
 from tema_cuatro import TemaCuatro
 from tema_cinco import TemaCinco
 from tema_seis import TemaSeis
+from tema_siete import TemaSiete
 from tema_ocho import TemaOcho
 from tema_nueve import TemaNueve
 
@@ -44,6 +45,7 @@ class NumericalMethodsApp(ctk.CTk):
         self.logic_tema_cuatro = TemaCuatro()
         self.logic_tema_cinco = TemaCinco()
         self.logic_tema_seis = TemaSeis()
+        self.logic_tema_siete = TemaSiete()
         self.logic_tema_ocho = TemaOcho()
         self.logic_tema_nueve = TemaNueve()
 
@@ -171,6 +173,7 @@ class NumericalMethodsApp(ctk.CTk):
             "Tema Cuatro": self.logic_tema_cuatro,
             "Tema Cinco": self.logic_tema_cinco,
             "Tema Seis": self.logic_tema_seis,
+            "Tema Siete": self.logic_tema_siete,
             "Tema Ocho": self.logic_tema_ocho,
             "Tema Nueve": self.logic_tema_nueve
         }
@@ -256,6 +259,110 @@ class NumericalMethodsApp(ctk.CTk):
             self.create_option_menu("Selecciona el evento", opciones_tema_seis, "caso_tema_seis", command=update_desc_tema_seis)
             update_desc_tema_seis("Evento A")
             self.create_horizontal_group("Probabilidades", ["Prob. Normal", "Prob. A", "Prob. B"], ["prob_normal", "prob_a", "prob_b"])
+        elif "Tema Siete" == new_method:
+            opciones = ["2 Eventos (A, B)", "3 Eventos (A, B, C)", "4 Eventos (A, B, C, D)"]
+            
+            lbl_problema = ctk.CTkLabel(self.input_container, text="", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
+            lbl_problema.pack(pady=(10, 10), padx=20, anchor="w", fill="x")
+            
+            wizard_frame = ctk.CTkFrame(self.input_container, fg_color="transparent")
+            wizard_frame.pack(fill="x", padx=20, pady=(5, 10))
+            
+            lbl_step = ctk.CTkLabel(wizard_frame, text="Paso 1", font=ctk.CTkFont(size=14, weight="bold"), text_color=NEON_BLUE)
+            lbl_step.pack(pady=(5, 5))
+            
+            lbl_instruction = ctk.CTkLabel(wizard_frame, text="Ingresa P(A):", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+            lbl_instruction.pack(pady=(0, 10))
+            
+            entry_val = NeonEntry(wizard_frame, placeholder_text="0.0", justify="center", height=35)
+            entry_val.pack(pady=(0, 10))
+            
+            btn_frame = ctk.CTkFrame(wizard_frame, fg_color="transparent")
+            btn_frame.pack(fill="x", pady=(0, 10))
+            
+            self.tema_siete_state = {"step": 0, "values": [], "labels": [], "case": "2 Eventos (A, B)"}
+            
+            def render_step():
+                state = self.tema_siete_state
+                total_steps = len(state["labels"])
+                if state["step"] < total_steps:
+                    lbl_step.configure(text=f"Paso {state['step'] + 1} de {total_steps}")
+                    lbl_instruction.configure(text=f"Ingresa {state['labels'][state['step']]}:")
+                    entry_val.configure(state="normal")
+                    entry_val.delete(0, "end")
+                    if state["step"] < len(state["values"]):
+                        entry_val.insert(0, str(state["values"][state["step"]]))
+                    entry_val.focus()
+                    btn_next.configure(text="Siguiente")
+                else:
+                    lbl_step.configure(text="¡Completado!")
+                    lbl_instruction.configure(text="Has ingresado todos los valores. Presiona CALCULAR.")
+                    entry_val.delete(0, "end")
+                    entry_val.configure(state="disabled")
+                    btn_next.configure(text="Terminado")
+
+            def next_step(event=None):
+                state = self.tema_siete_state
+                if state["step"] >= len(state["labels"]): return
+                try:
+                    val = float(entry_val.get())
+                except ValueError:
+                    messagebox.showerror("Error", "Por favor ingresa un número válido.")
+                    return
+                if state["step"] < len(state["values"]):
+                    state["values"][state["step"]] = val
+                else:
+                    state["values"].append(val)
+                state["step"] += 1
+                render_step()
+
+            def prev_step():
+                state = self.tema_siete_state
+                if state["step"] > 0:
+                    state["step"] -= 1
+                    render_step()
+                    
+            def reset_wizard():
+                state = self.tema_siete_state
+                state["step"] = 0
+                state["values"] = []
+                render_step()
+
+            btn_prev = ctk.CTkButton(btn_frame, text="Atrás", width=80, command=prev_step)
+            btn_prev.pack(side="left", padx=10)
+            
+            btn_reset = ctk.CTkButton(btn_frame, text="Reiniciar", width=80, fg_color="#C0392B", hover_color="#922B21", command=reset_wizard)
+            btn_reset.pack(side="left", expand=True)
+            
+            btn_next = ctk.CTkButton(btn_frame, text="Siguiente", width=80, command=next_step)
+            btn_next.pack(side="right", padx=10)
+            
+            entry_val.bind("<Return>", next_step)
+            
+            def update_tema_siete_case(choice):
+                state = self.tema_siete_state
+                state["case"] = choice
+                state["step"] = 0
+                state["values"] = []
+                if choice == "2 Eventos (A, B)":
+                    lbl_problema.configure(text=self.logic_tema_siete.problema_uno)
+                    state["labels"] = ["P(A)", "P(B)", "P(A ∩ B)"]
+                elif choice == "3 Eventos (A, B, C)":
+                    lbl_problema.configure(text=self.logic_tema_siete.problema_dos)
+                    state["labels"] = ["P(A)", "P(B)", "P(C)", "P(A ∩ B)", "P(A ∩ C)", "P(B ∩ C)", "P(A ∩ B ∩ C)"]
+                else:
+                    lbl_problema.configure(text=self.logic_tema_siete.problema_tres)
+                    state["labels"] = ["P(A)", "P(B)", "P(C)", "P(D)",
+                                       "P(A ∩ B)", "P(A ∩ C)", "P(A ∩ D)", "P(B ∩ C)", "P(B ∩ D)", "P(C ∩ D)",
+                                       "P(A ∩ B ∩ C)", "P(A ∩ B ∩ D)", "P(A ∩ C ∩ D)", "P(B ∩ C ∩ D)",
+                                       "P(A ∩ B ∩ C ∩ D)"]
+                render_step()
+                
+            self.create_option_menu("Selecciona el caso", opciones, "caso_tema_siete", command=update_tema_siete_case)
+            wizard_frame.pack_forget() # Repack after option menu
+            wizard_frame.pack(fill="x", padx=20, pady=(5, 10))
+            update_tema_siete_case("2 Eventos (A, B)")
+
         elif "Tema Ocho" == new_method:
             lbl_problema = ctk.CTkLabel(self.input_container, text=self.logic_tema_ocho.problema, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
             lbl_problema.pack(pady=(10, 10), padx=20, anchor="w", fill="x")
@@ -453,6 +560,45 @@ class NumericalMethodsApp(ctk.CTk):
                     self.result_textbox.delete("1.0", "end")
                     self.result_textbox.insert("end", f"Probabilidad Total: {total:.4f}\n")
                     self.result_textbox.configure(state="disabled")
+
+            elif method == "Tema Siete":
+                state = self.tema_siete_state
+                if state["step"] < len(state["labels"]):
+                    messagebox.showerror("Error", "Faltan valores por ingresar. Termina todos los pasos.")
+                    return
+                
+                case = state["case"]
+                
+                self.result_textbox.configure(state="normal")
+                self.result_textbox.delete("1.0", "end")
+                
+                if case == "2 Eventos (A, B)":
+                    self.logic_tema_siete.probabilidades_uno = state["values"]
+                    prob = self.logic_tema_siete.calcular_probabilidad_dos_eventos()
+                    proc = f"Regla Aditiva (2 Eventos):\n\nP(A U B) = P(A) + P(B) - P(A ∩ B)\nP(A U B) = {state['values'][0]} + {state['values'][1]} - {state['values'][2]}\n= {prob:.4f}"
+                elif case == "3 Eventos (A, B, C)":
+                    self.logic_tema_siete.probabilidades_dos = state["values"]
+                    prob = self.logic_tema_siete.calcular_probabilidad_tres_eventos()
+                    v = state["values"]
+                    proc = (f"Regla Aditiva (3 Eventos):\n\nP(A U B U C) = P(A) + P(B) + P(C) - P(A ∩ B) - P(A ∩ C) - P(B ∩ C) + P(A ∩ B ∩ C)\n"
+                            f"P(A U B U C) = {v[0]} + {v[1]} + {v[2]} - {v[3]} - {v[4]} - {v[5]} + {v[6]}\n= {prob:.4f}")
+                else:
+                    self.logic_tema_siete.probabilidades_tres = state["values"]
+                    prob = self.logic_tema_siete.calcular_probabilidad_cuatro_eventos()
+                    v = state["values"]
+                    proc = (f"Regla Aditiva (4 Eventos):\n\n"
+                            f"P(A U B U C U D) = P(A) + P(B) + P(C) + P(D)\n"
+                            f"                 - P(A ∩ B) - P(A ∩ C) - P(A ∩ D) - P(B ∩ C) - P(B ∩ D) - P(C ∩ D)\n"
+                            f"                 + P(A ∩ B ∩ C) + P(A ∩ B ∩ D) + P(A ∩ C ∩ D) + P(B ∩ C ∩ D)\n"
+                            f"                 - P(A ∩ B ∩ C ∩ D)\n\n"
+                            f"Sustituyendo:\n"
+                            f"P = {v[0]} + {v[1]} + {v[2]} + {v[3]}\n"
+                            f"  - {v[4]} - {v[5]} - {v[6]} - {v[7]} - {v[8]} - {v[9]}\n"
+                            f"  + {v[10]} + {v[11]} + {v[12]} + {v[13]}\n"
+                            f"  - {v[14]}\n= {prob:.4f}")
+                            
+                self.result_textbox.insert("end", proc)
+                self.result_textbox.configure(state="disabled")
 
             elif method == "Tema Ocho":
                 try:
