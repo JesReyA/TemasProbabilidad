@@ -5,8 +5,8 @@ import sympy as sp
 
 # IMPORTS
 from tema_uno import TemaUno
-#from tema_dos import TemaDos
-#from tema_tres import TemaTres
+from tema_dos import TemaDos
+from tema_tres import TemaTres
 #from tema_cuatro import TemaCuatro
 from tema_cinco import TemaCinco
 from tema_seis import TemaSeis
@@ -38,8 +38,8 @@ class NumericalMethodsApp(ctk.CTk):
 
         # INSTANCIAS LÓGICAS
         self.logic_tema_uno = TemaUno()
-        #self.logic_tema_dos = TemaDos(None)
-        #self.logic_tema_tres = TemaTres(None)
+        self.logic_tema_dos = TemaDos()
+        self.logic_tema_tres = TemaTres()
         #self.logic_tema_cuatro = TemaCuatro(None)
         self.logic_tema_cinco = TemaCinco()
         self.logic_tema_seis = TemaSeis()
@@ -164,8 +164,8 @@ class NumericalMethodsApp(ctk.CTk):
         # Mapeo de temas a sus instancias lógicas
         temas_logic = {
             "Tema Uno": self.logic_tema_uno,
-            #"Tema Dos": self.logic_tema_dos,
-            #"Tema Tres": self.logic_tema_tres,
+            "Tema Dos": self.logic_tema_dos,
+            "Tema Tres": self.logic_tema_tres,
             #"Tema Cuatro": self.logic_tema_cuatro,
             "Tema Cinco": self.logic_tema_cinco,
             "Tema Seis": self.logic_tema_seis,
@@ -185,9 +185,48 @@ class NumericalMethodsApp(ctk.CTk):
             self.definition_textbox.configure(state="disabled")
 
         if "Tema Dos" == new_method:
-            self.create_entry("Número", "numero")
+            self.tema_dos_dynamic_frame = ctk.CTkFrame(self.input_container, fg_color="transparent")
+            
+            def update_tema_dos(choice):
+                for widget in self.tema_dos_dynamic_frame.winfo_children():
+                    widget.destroy()
+                
+                if choice == "Eventos Disjuntos":
+                    desc = self.logic_tema_dos.eventos_disjuntos
+                elif choice == "Eventos Complementarios":
+                    desc = self.logic_tema_dos.eventos_complementarios
+                else:
+                    desc = self.logic_tema_dos.eventos_compuestos
+                
+                lbl_desc = ctk.CTkLabel(self.tema_dos_dynamic_frame, text=desc, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
+                lbl_desc.pack(pady=(10, 20), padx=20, fill="x", anchor="w")
+                
+                if choice == "Eventos Complementarios":
+                    lbl = ctk.CTkLabel(self.tema_dos_dynamic_frame, text="Probabilidad A", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+                    lbl.pack(pady=(10, 5), padx=20, anchor="w")
+                    entry = NeonEntry(self.tema_dos_dynamic_frame, placeholder_text="Ingresa Prob. A...", height=35)
+                    entry.pack(pady=(0, 10), padx=20, fill="x")
+                    self.entries["prob_a_t2"] = entry
+                else:
+                    lbl = ctk.CTkLabel(self.tema_dos_dynamic_frame, text="Probabilidades", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+                    lbl.pack(pady=(10, 5), padx=20, anchor="w")
+                    row_frame = ctk.CTkFrame(self.tema_dos_dynamic_frame, fg_color="transparent")
+                    row_frame.pack(pady=(0, 10), padx=20, fill="x")
+                    entry_a = NeonEntry(row_frame, placeholder_text="Prob. A", height=35, justify="center")
+                    entry_a.pack(side="left", fill="x", expand=True)
+                    self.entries["prob_a_t2"] = entry_a
+                    
+                    entry_b = NeonEntry(row_frame, placeholder_text="Prob. B", height=35, justify="center")
+                    entry_b.pack(side="left", fill="x", expand=True, padx=(10, 0))
+                    self.entries["prob_b_t2"] = entry_b
+
+            opciones_tema_dos = ["Eventos Disjuntos", "Eventos Complementarios", "Eventos Compuestos"]
+            self.create_option_menu("Selecciona el tipo de evento", opciones_tema_dos, "caso_tema_dos", command=update_tema_dos)
+            self.tema_dos_dynamic_frame.pack(fill="x", pady=0)
+            update_tema_dos("Eventos Disjuntos")
         elif "Tema Tres" == new_method:
-            self.create_entry("Número", "numero")
+            lbl_problema = ctk.CTkLabel(self.input_container, text=self.logic_tema_tres.problema, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
+            lbl_problema.pack(pady=20, padx=20, fill="x", anchor="w")
         elif "Tema Cuatro" == new_method:
             self.create_entry("Número", "numero")
         elif "Tema Cinco" == new_method:
@@ -245,6 +284,55 @@ class NumericalMethodsApp(ctk.CTk):
                 self.result_textbox.delete("1.0", "end")
 
                 self.result_textbox._textbox.image_create("end", image=self.foto_carta)
+                self.result_textbox.configure(state="disabled")
+                
+            elif method == "Tema Dos":
+                caso_seleccionado = self.entries.get("caso_tema_dos")
+                if caso_seleccionado:
+                    caso_val = caso_seleccionado.get()
+                    try:
+                        prob_a = float(self.entries["prob_a_t2"].get())
+                        if caso_val != "Eventos Complementarios":
+                            prob_b = float(self.entries["prob_b_t2"].get())
+                    except ValueError:
+                        messagebox.showerror("Error", "Por favor ingresa valores numéricos válidos en las casillas.")
+                        return
+
+                    self.result_textbox.configure(state="normal")
+                    self.result_textbox.delete("1.0", "end")
+
+                    if caso_val == "Eventos Disjuntos":
+                        total = self.logic_tema_dos.calcular_probabilidad_eventos_disjuntos(prob_a, prob_b)
+                        self.result_textbox.insert("end", f"Probabilidad Eventos Disjuntos:\n")
+                        self.result_textbox.insert("end", f"P(A ∪ B) = P(A) + P(B) = {prob_a} + {prob_b} = {total:.4f}\n")
+                    elif caso_val == "Eventos Complementarios":
+                        total = self.logic_tema_dos.calcular_probabilidad_eventos_complementarios(prob_a)
+                        self.result_textbox.insert("end", f"Probabilidad Evento Complementario:\n")
+                        self.result_textbox.insert("end", f"P(A') = 1 - P(A) = 1 - {prob_a} = {total:.4f}\n")
+                    else:
+                        total = self.logic_tema_dos.calcular_probabilidad_eventos_compuestos(prob_a, prob_b)
+                        self.result_textbox.insert("end", f"Probabilidad Eventos Compuestos (Independientes):\n")
+                        self.result_textbox.insert("end", f"P(A ∩ B) = P(A) * P(B) = {prob_a} * {prob_b} = {total:.4f}\n")
+                        
+                    self.result_textbox.configure(state="disabled")
+
+            elif method == "Tema Tres":
+                prob_cond_uno, probabilidad = self.logic_tema_tres.calcular_probabilidad_condicional()
+                
+                self.result_textbox.configure(state="normal")
+                self.result_textbox.delete("1.0", "end")
+                
+                procedimiento = (
+                    f"1. Calcular la probabilidad conjunta P(ICO y Linux):\n"
+                    f"   P(ICO y Linux) = P(ICO) * P(Linux|ICO)\n"
+                    f"   P(ICO y Linux) = {self.logic_tema_tres.probabilidad_ICO} * {self.logic_tema_tres.probabilidad_ICO_y_Linux} = {prob_cond_uno:.4f}\n\n"
+                    f"2. Calcular la probabilidad condicional P(ICO|Linux):\n"
+                    f"   P(ICO|Linux) = P(ICO y Linux) / P(Linux)\n"
+                    f"   P(ICO|Linux) = {prob_cond_uno:.4f} / {self.logic_tema_tres.probabilidad_Linux} = {probabilidad:.4f}\n\n"
+                    f"Respuesta:\nLa probabilidad de que pertenezca a Ingeniería en Computación dado que usa Linux es {probabilidad:.2%}."
+                )
+                
+                self.result_textbox.insert("end", procedimiento)
                 self.result_textbox.configure(state="disabled")
 
             elif method == "Tema Cinco":
