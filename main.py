@@ -10,6 +10,7 @@ from tema_tres import TemaTres
 from tema_cuatro import TemaCuatro
 from tema_cinco import TemaCinco
 from tema_seis import TemaSeis
+from tema_ocho import TemaOcho
 from tema_nueve import TemaNueve
 
 ctk.set_appearance_mode("Dark")
@@ -43,6 +44,7 @@ class NumericalMethodsApp(ctk.CTk):
         self.logic_tema_cuatro = TemaCuatro()
         self.logic_tema_cinco = TemaCinco()
         self.logic_tema_seis = TemaSeis()
+        self.logic_tema_ocho = TemaOcho()
         self.logic_tema_nueve = TemaNueve()
 
         self.title("Probabilidad y estadística")
@@ -169,6 +171,7 @@ class NumericalMethodsApp(ctk.CTk):
             "Tema Cuatro": self.logic_tema_cuatro,
             "Tema Cinco": self.logic_tema_cinco,
             "Tema Seis": self.logic_tema_seis,
+            "Tema Ocho": self.logic_tema_ocho,
             "Tema Nueve": self.logic_tema_nueve
         }
 
@@ -253,6 +256,32 @@ class NumericalMethodsApp(ctk.CTk):
             self.create_option_menu("Selecciona el evento", opciones_tema_seis, "caso_tema_seis", command=update_desc_tema_seis)
             update_desc_tema_seis("Evento A")
             self.create_horizontal_group("Probabilidades", ["Prob. Normal", "Prob. A", "Prob. B"], ["prob_normal", "prob_a", "prob_b"])
+        elif "Tema Ocho" == new_method:
+            lbl_problema = ctk.CTkLabel(self.input_container, text=self.logic_tema_ocho.problema, font=ctk.CTkFont(size=14), text_color=TEXT_COLOR, wraplength=650, justify="left")
+            lbl_problema.pack(pady=(10, 10), padx=20, anchor="w", fill="x")
+            
+            self.create_horizontal_pair("Cantidad de chocolates", ["Cajeta", "Menta"], ["cant_cajeta", "cant_menta"])
+            
+            opciones = ["Cajeta", "Menta"]
+            
+            row_frame = ctk.CTkFrame(self.input_container, fg_color="transparent")
+            row_frame.pack(fill="x", padx=20, pady=(5, 10))
+            
+            col1 = ctk.CTkFrame(row_frame, fg_color="transparent")
+            col1.pack(side="left", fill="x", expand=True, padx=(0, 10))
+            lbl1 = ctk.CTkLabel(col1, text="Primer chocolate", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+            lbl1.pack(anchor="w")
+            om1 = ctk.CTkOptionMenu(col1, values=opciones)
+            om1.pack(fill="x", pady=(5, 0))
+            self.entries["evento_a_t8"] = om1
+            
+            col2 = ctk.CTkFrame(row_frame, fg_color="transparent")
+            col2.pack(side="left", fill="x", expand=True, padx=(10, 0))
+            lbl2 = ctk.CTkLabel(col2, text="Segundo chocolate", font=ctk.CTkFont(size=14), text_color=TEXT_COLOR)
+            lbl2.pack(anchor="w")
+            om2 = ctk.CTkOptionMenu(col2, values=opciones)
+            om2.pack(fill="x", pady=(5, 0))
+            self.entries["evento_b_t8"] = om2
 
 
     def append_result(self, text):
@@ -424,6 +453,31 @@ class NumericalMethodsApp(ctk.CTk):
                     self.result_textbox.delete("1.0", "end")
                     self.result_textbox.insert("end", f"Probabilidad Total: {total:.4f}\n")
                     self.result_textbox.configure(state="disabled")
+
+            elif method == "Tema Ocho":
+                try:
+                    cajeta = int(self.entries["cant_cajeta"].get())
+                    menta = int(self.entries["cant_menta"].get())
+                except ValueError:
+                    messagebox.showerror("Error", "Por favor ingresa cantidades enteras válidas en Cajeta y Menta.")
+                    return
+                
+                self.logic_tema_ocho.cantidad_cajeta = cajeta
+                self.logic_tema_ocho.cantidad_menta = menta
+                
+                ev_a = self.entries["evento_a_t8"].get()
+                ev_b = self.entries["evento_b_t8"].get()
+                
+                self.logic_tema_ocho.evento_a = 1 if ev_a == "Cajeta" else 2
+                self.logic_tema_ocho.evento_b = 1 if ev_b == "Cajeta" else 2
+                
+                prob, proc = self.logic_tema_ocho.calcular_probabilidad()
+                
+                self.result_textbox.configure(state="normal")
+                self.result_textbox.delete("1.0", "end")
+                self.result_textbox.insert("end", proc)
+                self.result_textbox.insert("end", f"\nRespuesta:\nLa probabilidad de sacar {ev_a} y luego {ev_b} es {prob:.2%}.")
+                self.result_textbox.configure(state="disabled")
 
             elif method == "Tema Nueve":
                 self.logic_tema_nueve = TemaNueve()
