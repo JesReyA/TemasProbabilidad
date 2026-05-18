@@ -68,6 +68,7 @@ class NumericalMethodsApp(ctk.CTk):
         # MENU
         self.method_option_menu = ctk.CTkOptionMenu(self.sidebar_frame,
                                                     values=[
+                                                        "Inicio",
                                                         "Tema Uno",
                                                         "Tema Dos",
                                                         "Tema Tres",
@@ -118,7 +119,7 @@ class NumericalMethodsApp(ctk.CTk):
         self.result_textbox.configure(state="disabled")
 
         self.entries = {}
-        self.change_method_event("Tema Uno")
+        self.change_method_event("Inicio")
 
     def clean_inputs(self):
         for widget in self.input_container.winfo_children(): widget.destroy()
@@ -190,7 +191,30 @@ class NumericalMethodsApp(ctk.CTk):
             self.definition_textbox.delete("1.0", "end")
             self.definition_textbox.configure(state="disabled")
 
-        if "Tema Dos" == new_method:
+        if "Inicio" == new_method:
+            self.title_label.configure(text="Datos del Alumno")
+            
+            self.definition_textbox.configure(state="normal")
+            self.definition_textbox.delete("1.0", "end")
+            proposito = "Propósito del programa:\n\nEste programa es una herramienta interactiva diseñada para facilitar la resolución y comprensión de diversos problemas de Probabilidad y Estadística. Permite al usuario interactuar con diferentes temas, calcular resultados automáticamente y visualizar los procedimientos paso a paso de cada ejercicio."
+            self.definition_textbox.insert("0.0", proposito)
+            self.definition_textbox.configure(state="disabled")
+            
+            # --- DATOS ALUMNO ---
+            nombre_alumno = "Reyna Avitia Jesús"
+            grupo_alumno = "2407"
+            fecha_actual = "18/05/2026"
+
+            lbl_nombre = ctk.CTkLabel(self.input_container, text=f"Nombre: {nombre_alumno}", font=ctk.CTkFont(size=18, weight="bold"), text_color=TEXT_COLOR)
+            lbl_nombre.pack(pady=(30, 10), padx=20, anchor="w")
+            
+            lbl_grupo = ctk.CTkLabel(self.input_container, text=f"Grupo: {grupo_alumno}", font=ctk.CTkFont(size=18, weight="bold"), text_color=TEXT_COLOR)
+            lbl_grupo.pack(pady=(0, 10), padx=20, anchor="w")
+            
+            lbl_fecha = ctk.CTkLabel(self.input_container, text=f"Fecha: {fecha_actual}", font=ctk.CTkFont(size=18, weight="bold"), text_color=TEXT_COLOR)
+            lbl_fecha.pack(pady=(0, 30), padx=20, anchor="w")
+
+        elif "Tema Dos" == new_method:
             self.tema_dos_dynamic_frame = ctk.CTkFrame(self.input_container, fg_color="transparent")
             
             def update_tema_dos(choice):
@@ -406,8 +430,11 @@ class NumericalMethodsApp(ctk.CTk):
     def calculate_event(self):
         method = self.method_option_menu.get()
         try:
+            if method == "Inicio":
+                self.overwrite_result("¡Bienvenido! Selecciona un tema en el menú de la izquierda para comenzar a trabajar.")
+
             # --- Tema Uno ---
-            if method == "Tema Uno":
+            elif method == "Tema Uno":
                 self.logic_tema_uno = TemaUno()
 
                 ruta_carta = self.logic_tema_uno.mostrar_carta()
